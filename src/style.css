@@ -1,0 +1,7 @@
+body {
+  margin: 0;
+  background-image: url(https://sm.ign.com/ign_latam/review/p/pokemon-le/pokemon-lets-go-pikachu-and-eevee-review_z5w8.jpg);
+  background-size: cover; /* Ajusta la imagen de fondo para cubrir la ventana del navegador */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
