@@ -15,6 +15,7 @@
           </svg>
         </button>
       </div>
+      <!-- <button @click="cargarMasPokemones(50)">ver mas</button> -->
     </div>
     <div id="info2">
       <div v-if="mostrar" id="info2">
@@ -45,11 +46,12 @@
             <p id="info">Espacial defensa <input id="barrap" type="text">{{ specialdefense }}</p>
             <p id="info">velocidad <input id="barrap" type="text">{{ speed }}</p>
             <p id="info">Tipo {{ tipo_pk }}</p>
+            <div id="botones"><button id="botonvolver" @click="Volver()">Volver</button></div>
           </div>
 
         </div>
       </div>
-      <div id="botones"><button id="botonvolver" @click="Volver()">Volver</button></div>
+
     </div>
   </div>
 </template> 
@@ -57,12 +59,6 @@
 <script setup>
 import axios from "axios"
 import { ref, onMounted, computed } from 'vue'
-
-
-// Barra busqueda
-
-
-
 
 let img = ref('')
 let numero = ref('')
@@ -133,6 +129,30 @@ async function obtenerPokemones() {
     })
   }
 }
+
+// async function cargarMasPokemones(cantidad) {
+//   const startIndex = pokemonList.value.length + 1;
+//   const endIndex = startIndex + cantidad - 1;
+
+//   for (let i = startIndex; i <= endIndex; i++) {
+//     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`)
+//     const data = response.data
+
+//     pokemonList.value.push({
+//       img: data.sprites.other["official-artwork"].front_default,
+//       numero: data.id,
+//       nombre: data.name,
+//       hp: data.stats[0].base_stat,
+//       attack: data.stats[1].base_stat,
+//       defense: data.stats[2].base_stat,
+//       specialattack: data.stats[3].base_stat,
+//       specialdefense: data.stats[4].base_stat,
+//       speed: data.stats[5].base_stat,
+//       tipo_pk: data.types.map((element) => element.type.name),
+//     })
+//   }
+// }
+
 </script>
 
 
@@ -249,7 +269,7 @@ img {
 }
 
 #nuevacosa{
-  margin-top: 60px;
+  margin-top: 20px;
   display: flex;  
   background-color: #a970ff;
   border-radius: 30px;
@@ -257,7 +277,7 @@ img {
   background-size: cover;
   background-repeat: no-repeat;
   width: 1200px;
-  height: 700px;
+  height: 600px;
 }
 
 #nuevacosa2{
