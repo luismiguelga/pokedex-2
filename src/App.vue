@@ -6,7 +6,7 @@
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Pokebola-pokeball-png-0.png/601px-Pokebola-pokeball-png-0.png"
         alt="">
       <div class="container">
-        <input v-model="buscar" type="text" name="text" class="input" placeholder="Dark Twitch Search">
+        <input v-model="buscar" type="text" name="text" class="input" placeholder="Búsqueda en Dark Twitch">
         <button class="search__btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
             <path
@@ -15,11 +15,11 @@
           </svg>
         </button>
       </div>
-      <!-- <button @click="cargarMasPokemones(50)">ver mas</button> -->
+      <button id="btnmas" @click="cargarMasPokemones(50)">Ver mas+</button>
     </div>
     <div id="info2">
       <div v-if="mostrar" id="info2">
-        <div id="tarjetas" v-for="(pokemon, index) in pokemonList" :key="index">
+        <div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
           <div id="mostrarcosas">
             <img :src="pokemon.img" alt="">
             <h1 id="namei">#{{ pokemon.numero }}</h1>
@@ -29,7 +29,7 @@
               <span class="circle" aria-hidden="true">
                 <span class="icon arrow"></span>
               </span>
-              <span class="button-text">Learn More</span>
+              <span class="button-text">Ver mas</span>
             </button>
           </div>
         </div>
@@ -46,12 +46,11 @@
             <p id="info">Espacial defensa <input id="barrap" type="text">{{ specialdefense }}</p>
             <p id="info">velocidad <input id="barrap" type="text">{{ speed }}</p>
             <p id="info">Tipo {{ tipo_pk }}</p>
-            <div id="botones"><button id="botonvolver" @click="Volver()">Volver</button></div>
+            <div id="botones"><button id="volver" @click="Volver()">Volver👈</button></div>
           </div>
-
         </div>
       </div>
-
+      
     </div>
   </div>
 </template> 
@@ -73,7 +72,24 @@ let tipo_pk = ref([])
 let mostrar = ref(true)
 let mostrardos = ref(false)
 let pokemonList = ref([]);
+let buscar = ref('');
 
+
+//Para la barra de busqueda es necesario:
+//1- que el imput tenga un v-model que contenga el contenido del nombre de la variable(3)
+//2- El vector donde esta guardado los datos a buscar
+//3- una variable en este caso "buscar"
+//4- El computed en el import
+//5- en el div donde se esten almacenando las cosas le cambiamos el nombre por la de esta funcion:
+//5.1-<div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
+//6- La funcion de abajo
+const listaFiltradaDePokemon = computed(() => {
+  return pokemonList.value.filter((pokemon) =>
+    pokemon.nombre.toLowerCase().includes(buscar.value.toLowerCase())
+  );
+});
+
+//Obtener la informacion de cada
 async function ObtenerUrlPokemon(pokemon) {
   const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.numero}`)
   const data = response.data
@@ -109,7 +125,7 @@ function Volver() {
 onMounted(() => {
   obtenerPokemones()
 })
-
+//Cargar los primeros 50 inciales
 async function obtenerPokemones() {
   for (let i = 1; i <= 50; i++) {
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`)
@@ -129,29 +145,29 @@ async function obtenerPokemones() {
     })
   }
 }
+//Cargar mas de los 50 inicales 
+async function cargarMasPokemones(cantidad) {
+  const startIndex = pokemonList.value.length + 1;
+  const endIndex = startIndex + cantidad - 1;
 
-// async function cargarMasPokemones(cantidad) {
-//   const startIndex = pokemonList.value.length + 1;
-//   const endIndex = startIndex + cantidad - 1;
+  for (let i = startIndex; i <= endIndex; i++) {
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`)
+    const data = response.data
 
-//   for (let i = startIndex; i <= endIndex; i++) {
-//     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`)
-//     const data = response.data
-
-//     pokemonList.value.push({
-//       img: data.sprites.other["official-artwork"].front_default,
-//       numero: data.id,
-//       nombre: data.name,
-//       hp: data.stats[0].base_stat,
-//       attack: data.stats[1].base_stat,
-//       defense: data.stats[2].base_stat,
-//       specialattack: data.stats[3].base_stat,
-//       specialdefense: data.stats[4].base_stat,
-//       speed: data.stats[5].base_stat,
-//       tipo_pk: data.types.map((element) => element.type.name),
-//     })
-//   }
-// }
+    pokemonList.value.push({
+      img: data.sprites.other["official-artwork"].front_default,
+      numero: data.id,
+      nombre: data.name,
+      hp: data.stats[0].base_stat,
+      attack: data.stats[1].base_stat,
+      defense: data.stats[2].base_stat,
+      specialattack: data.stats[3].base_stat,
+      specialdefense: data.stats[4].base_stat,
+      speed: data.stats[5].base_stat,
+      tipo_pk: data.types.map((element) => element.type.name),
+    })
+  }
+}
 
 </script>
 
@@ -171,28 +187,52 @@ img {
   margin-top: 30px;
 }
 
+#btnmas{
+width: 150px;
+height: 50px;
+border-radius: 10px;
+border: 5px solid black;
+position: relative;
+left: 40%;
+top: -15px;
+background-color: #53535f;
+color: white;
+}
+
+#btnmas:hover{color: #000000;
+
+  background-color: white;
+}
 #buscar {
   height: 30px;
   width: 300px;
 }
-
-#botonvolver{
-  align-items: center;
-}
-#botones{
+#botones {
+  width: 200px;
+  height: 70px;
   display: flex;
-  border: 5px solid #000000;
-  border-radius: 50px;
-  width: 100px;
-  height: 100px;
-  justify-content: center;
-  background-color: #f7f7f8;
-  font-size: 7mm;
-  
-
+  justify-content: center; 
+  align-items: start;
+  background-color: #9700ce; 
+  border: none; 
+  border-radius: 5px; 
+  font-size: 40px; 
+  text-decoration: none; 
+  cursor: pointer; 
+  position: relative;
+  left: 300px;
+  top: 100px;
+}
+#botones:hover {
+  background-color: #9d00ff; 
 }
 
 
+#volver{
+position: relative;
+top: -23px;
+color:rgb(0, 0, 0)
+}
 
 #pokeball {
   width: 80px;
@@ -201,6 +241,7 @@ img {
   left: 150px;
   top: -15px;
 }
+
 #info {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 5mm;
@@ -209,13 +250,14 @@ img {
   top: 37px;
   left: 160px;
 }
-#infonombre{
+
+#infonombre {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 10mm;
   color: rgb(0, 0, 0);
   position: relative;
   top: 15px;
-  left: 190px;  
+  left: 190px;
 }
 
 #info1 {
@@ -268,25 +310,25 @@ img {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-#nuevacosa{
-  margin-top: 20px;
-  display: flex;  
+#nuevacosa {
+  margin-top: 30px;
+  display: flex;
   background-color: #a970ff;
   border-radius: 30px;
   background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/8168a26e-e2d0-454e-9239-267f073715cf/dd777on-b4242a08-5757-401c-8e51-0dca0a438469.png/v1/fill/w_1280,h_854/fakemon_template___1_stage_pokemon_by_gecko_comics_dd777on-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9ODU0IiwicGF0aCI6IlwvZlwvODE2OGEyNmUtZTJkMC00NTRlLTkyMzktMjY3ZjA3MzcxNWNmXC9kZDc3N29uLWI0MjQyYTA4LTU3NTctNDAxYy04ZTUxLTBkY2EwYTQzODQ2OS5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.5EMy2p0mB6ZqcgqAdpC9KYXpNr7XFG8xUgwyGxTFS40);
   background-size: cover;
   background-repeat: no-repeat;
   width: 1200px;
-  height: 600px;
+  height: 550px;
 }
 
-#nuevacosa2{
+#nuevacosa2 {
   position: relative;
   left: 50px;
 }
 
-#foton{
-  position:relative;
+#foton {
+  position: relative;
   top: 150px;
   left: -110px;
   width: 300px;
