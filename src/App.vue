@@ -15,6 +15,10 @@
           </svg>
         </button>
       </div>
+      <select id="opciones" name="tipo" v-model="tipoSeleccionado">
+        <option value="" disabled>Elige un tipo</option>
+        <option v-for="tipo in tipo_pk" :value="tipo" :key="tipo">{{ tipo }}</option>
+      </select>
       <button id="btnmas" @click="cargarMasPokemones(50)">Ver mas+</button>
     </div>
     <div id="info2">
@@ -24,12 +28,14 @@
             <img :src="pokemon.img" alt="">
             <h1 id="namei">#{{ pokemon.numero }}</h1>
             <h1 id="namei">{{ pokemon.nombre }}</h1>
-            <h1 id="namei" v-for="(item, index) in tipo_pk" :key="index">{{ item }}</h1>
+            <div id="namei2">
+              <h1 v-for="(item, index) in pokemon.tipo_pk" :key="index">{{ item }}</h1>
+            </div>
             <button id="verinfo" class="learn-more" @click="ObtenerUrlPokemon(pokemon)">
               <span class="circle" aria-hidden="true">
                 <span class="icon arrow"></span>
               </span>
-              <span class="button-text">Ver mas</span>
+              <span class="button-text">Ver más</span>
             </button>
           </div>
         </div>
@@ -50,7 +56,7 @@
           </div>
         </div>
       </div>
-      
+
     </div>
   </div>
 </template> 
@@ -73,6 +79,9 @@ let mostrar = ref(true)
 let mostrardos = ref(false)
 let pokemonList = ref([]);
 let buscar = ref('');
+let tipoSeleccionado = ref('');
+
+
 
 
 //Para la barra de busqueda es necesario:
@@ -124,6 +133,7 @@ function Volver() {
 
 onMounted(() => {
   obtenerPokemones()
+  obtenerTiposPokemon();
 })
 //Cargar los primeros 50 inciales
 async function obtenerPokemones() {
@@ -168,6 +178,18 @@ async function cargarMasPokemones(cantidad) {
     })
   }
 }
+//Hace que los tipos de pokemon se muestren en los select
+async function obtenerTiposPokemon() {
+  try {
+    const response = await axios.get('https://pokeapi.co/api/v2/type');
+    tipo_pk.value = response.data.results.map((tipo) => tipo.name);
+
+    // Agrega un console.log para verificar los tipos
+    console.log(tipo_pk.value);
+  } catch (error) {
+    console.error('Error al obtener los tipos de Pokémon:', error);
+  }
+}
 
 </script>
 
@@ -187,51 +209,65 @@ img {
   margin-top: 30px;
 }
 
-#btnmas{
-width: 150px;
-height: 50px;
-border-radius: 10px;
-border: 5px solid black;
-position: relative;
-left: 40%;
-top: -15px;
-background-color: #53535f;
-color: white;
+#opciones {
+  position: relative;
+  left: 25%;
+  width: 100px;
+  height: 30px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-#btnmas:hover{color: #000000;
+#btnmas {
+  width: 150px;
+  height: 50px;
+  border-radius: 10px;
+  border: 5px solid black;
+  position: relative;
+  left: 28%;
+  top: -5px;
+  background-color: #53535f;
+  color: white;
+}
+
+#btnmas:hover {
+  color: #000000;
 
   background-color: white;
 }
+
 #buscar {
   height: 30px;
   width: 300px;
 }
+
 #botones {
   width: 200px;
   height: 70px;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: start;
-  background-color: #9700ce; 
-  border: none; 
-  border-radius: 5px; 
-  font-size: 40px; 
-  text-decoration: none; 
-  cursor: pointer; 
+  background-color: #9700ce;
+  border: 5px solid black;
+  border: none;
+  border-radius: 5px;
+  font-size: 40px;
+  text-decoration: none;
+  cursor: pointer;
   position: relative;
   left: 300px;
   top: 100px;
 }
+
 #botones:hover {
-  background-color: #9d00ff; 
+  background-color: #9d00ff;
 }
 
 
-#volver{
-position: relative;
-top: -23px;
-color:rgb(0, 0, 0)
+#volver {
+  position: relative;
+  top: -23px;
+  color: rgb(0, 0, 0);
+
 }
 
 #pokeball {
@@ -308,6 +344,25 @@ color:rgb(0, 0, 0)
 
 #namei {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  position: relative;
+  top: -20px;
+}
+
+#namei2 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 13px;
+  display: flex;
+  /* Mostrar en línea */
+  gap: 10px;
+  /* Margen entre elementos */
+}
+
+#namei2 h1 {
+  display: inline;
+  margin-right: 10px;
+  position: relative;
+  top: -20px;
+
 }
 
 #nuevacosa {
@@ -363,7 +418,7 @@ button {
   padding: 0;
   font-size: inherit;
   font-family: inherit;
-  margin-top: 30px;
+  margin-top: 10px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
@@ -481,7 +536,7 @@ button:hover .button-text {
   border: none;
   cursor: pointer;
   position: relative;
-  top: -15px;
+  top: -5px;
   background-color: rgba(42, 42, 45, 1);
   border-top-right-radius: 7px;
   border-bottom-right-radius: 7px;
