@@ -15,21 +15,22 @@
           </svg>
         </button>
       </div>
-      <select id="opciones" name="tipo" v-model="tipoSeleccionado">
+      <select id="opciones" name="tipo" v-model="tipoFiltrado">
         <option value="" disabled>Elige un tipo</option>
+        <option value="">Todos</option>
         <option v-for="tipo in tipo_pk" :value="tipo" :key="tipo">{{ tipo }}</option>
       </select>
       <button id="btnmas" @click="cargarMasPokemones(50)">Ver mas+</button>
     </div>
     <div id="info2">
       <div v-if="mostrar" id="info2">
-        <div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
+        <div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index" >
           <div id="mostrarcosas">
             <img :src="pokemon.img" alt="">
             <h1 id="namei">#{{ pokemon.numero }}</h1>
             <h1 id="namei">{{ pokemon.nombre }}</h1>
             <div id="namei2">
-              <h1 v-for="(item, index) in pokemon.tipo_pk" :key="index">{{ item }}</h1>
+              <h1 v-for="(item, index) in pokemon.tipo_pk" :key="index" :class="item.toLowerCase()">{{ item }}</h1>
             </div>
             <button id="verinfo" class="learn-more" @click="ObtenerUrlPokemon(pokemon)">
               <span class="circle" aria-hidden="true">
@@ -45,18 +46,18 @@
           <h3 id="infonombre">{{ nombre }}</h3>
           <img id="foton" :src="img" alt="">
           <div id="nuevacosa2">
-            <p id="info">HP <input id="barrap" type="text"> {{ hp }} </p>
-            <p id="info">Ataque <input id="barrap" type="text">{{ attack }}</p>
-            <p id="info">Defensa <input id="barrap" type="text">{{ defense }}</p>
-            <p id="info">Especial ataque <input id="barrap" type="text">{{ specialattack }}</p>
-            <p id="info">Espacial defensa <input id="barrap" type="text">{{ specialdefense }}</p>
-            <p id="info">velocidad <input id="barrap" type="text">{{ speed }}</p>
-            <p id="info">Tipo {{ tipo_pk }}</p>
-            <div id="botones"><button id="volver" @click="Volver()">Volver👈</button></div>
+            <p id="info">HP <input id="barrap-hp" type="text" v-model="hp"> {{ hp }}%</p>
+            <p id="info">Ataque <input id="barrap-attack" type="text" v-model="attack"> {{ attack }}%</p>
+            <p id="info">Defensa <input id="barrap" type="text" v-model="defense"> {{ defense }}%</p>
+            <p id="info">Especial ataque <input id="barrap" type="text" v-model="specialattack"> {{ specialattack }}%</p>
+            <p id="info">Especial defensa <input id="barrap" type="text" v-model="specialdefense"> {{ specialdefense }}%
+            </p>
+            <p id="info">Velocidad <input id="barrap" type="text" v-model="speed"> {{ speed }}%</p>
+            <p id="info3" v-for="(item, index) in tipo_pk" :key="index" :class="item.toLowerCase()">{{ item }}</p>
+            <button id="volver" @click="Volver()">Volver👈</button>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template> 
@@ -80,8 +81,13 @@ let mostrardos = ref(false)
 let pokemonList = ref([]);
 let buscar = ref('');
 let tipoSeleccionado = ref('');
+let tipoFiltrado = ref('');
 
 
+function getPokemonCardClasses(pokemon) {
+  const classes = pokemon.tipo_pk.map((tipo) => tipo.toLowerCase()) // Convierte los tipos a minúsculas
+  return classes.join(' ')
+}
 
 
 //Para la barra de busqueda es necesario:
@@ -93,10 +99,29 @@ let tipoSeleccionado = ref('');
 //5.1-<div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
 //6- La funcion de abajo
 const listaFiltradaDePokemon = computed(() => {
-  return pokemonList.value.filter((pokemon) =>
-    pokemon.nombre.toLowerCase().includes(buscar.value.toLowerCase())
-  );
+  return pokemonList.value.filter((pokemon) => {
+    const nombreCoincide = pokemon.nombre.toLowerCase().includes(buscar.value.toLowerCase());
+    const tipoCoincide = tipoFiltrado.value === '' || pokemon.tipo_pk.includes(tipoFiltrado.value);
+    return nombreCoincide && tipoCoincide;
+  });
 });
+
+
+
+//Para la barra de busqueda es necesario:
+//1- que el imput tenga un v-model que contenga el contenido del nombre de la variable(3)
+//2- El vector donde esta guardado los datos a buscar
+//3- una variable en este caso "buscar"
+//4- El computed en el import
+//5- en el div donde se esten almacenando las cosas le cambiamos el nombre por la de esta funcion:
+//5.1-<div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
+//6- La funcion de abajo
+// const listaFiltradaDePokemon = computed(() => {
+//   return pokemonList.value.filter((pokemon) =>
+//     pokemon.nombre.toLowerCase().includes(buscar.value.toLowerCase())
+//   );
+// });
+
 
 //Obtener la informacion de cada
 async function ObtenerUrlPokemon(pokemon) {
@@ -178,7 +203,7 @@ async function cargarMasPokemones(cantidad) {
     })
   }
 }
-//Hace que los tipos de pokemon se muestren en los select
+//Hace que los tipos de pokemon se muestren segun los select
 async function obtenerTiposPokemon() {
   try {
     const response = await axios.get('https://pokeapi.co/api/v2/type');
@@ -195,10 +220,13 @@ async function obtenerTiposPokemon() {
 
 
 <style scoped>
+
+
 #body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-transform: capitalize;
 }
 
 img {
@@ -211,10 +239,19 @@ img {
 
 #opciones {
   position: relative;
-  left: 25%;
-  width: 100px;
-  height: 30px;
+  left: 28%;
+  width: 130px;
+  height: 50px;
+  border-radius: 10px;
+  border: 5px solid #000000;
+  background-color: #53535f;
+  color: white;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#opciones:hover {
+  color: #000000;
+  background-color: white;
 }
 
 #btnmas {
@@ -222,8 +259,7 @@ img {
   height: 50px;
   border-radius: 10px;
   border: 5px solid black;
-  position: relative;
-  left: 28%;
+  margin-left: 32%;
   top: -5px;
   background-color: #53535f;
   color: white;
@@ -231,7 +267,6 @@ img {
 
 #btnmas:hover {
   color: #000000;
-
   background-color: white;
 }
 
@@ -239,7 +274,6 @@ img {
   height: 30px;
   width: 300px;
 }
-
 #botones {
   width: 200px;
   height: 70px;
@@ -262,12 +296,22 @@ img {
   background-color: #9d00ff;
 }
 
-
 #volver {
   position: relative;
-  top: -23px;
+  top: 63px;
+  left: 400px;
+  width: 200px;
+  height: 80px;
   color: rgb(0, 0, 0);
+  border-radius: 10px;
+  background-color: #53535f;
+  color: white;
+  font-size: 30px;
+}
 
+#volver:hover {
+  color: #000000;
+  background-color: white;
 }
 
 #pokeball {
@@ -312,7 +356,17 @@ img {
   width: 100%;
   height: 100%;
 }
-
+#info3{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 5mm;
+  color: rgb(0, 0, 0);
+  position: relative;
+  top: 150px;
+  left: 160px;
+  border: 5px solid rgb(0, 0, 0);
+  border-radius: 5px;
+  width: 200px;
+}
 #tarjetas {
   margin-top: 50px;
   background-color: rgba(90, 189, 255, 0.726);
@@ -385,24 +439,10 @@ img {
 #foton {
   position: relative;
   top: 150px;
-  left: -110px;
+  left: -90px;
   width: 300px;
   height: 300px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -496,7 +536,6 @@ button:hover .button-text {
   color: #000000;
 }
 
-
 .container {
   display: flex;
   justify-content: center;
@@ -549,4 +588,76 @@ button:hover .button-text {
 
 .search__btn:hover {
   background-color: rgba(54, 54, 56, 1);
-}</style>
+}
+
+
+
+.grass {
+  background-color: rgb(1, 223, 1);
+  border-radius: 5px;
+}
+
+.fire {
+  background-color: red;
+  border-radius: 5px;
+}
+
+.water {
+  background-color: rgb(0, 132, 255);
+  border-radius: 5px;
+}
+.poison{
+  background-color: #9d00ff;
+  border-radius: 5px;}
+.bug{
+  background-color: green;
+  border-radius: 5px;}
+.flying{
+  border-radius: 5px;
+  background-color: #53535fb6;
+}
+.normal{
+  border-radius: 5px;
+    border-radius: 5px;background-color: rgba(255, 255, 255, 0.637) ;
+}
+.electric{
+  border-radius: 5px;
+  background-color: rgba(255, 255, 0, 0.74);
+}
+.ground{
+  border-radius: 5px;
+  background-color: rgb(131, 131, 0);
+}
+
+.fairy{
+  border-radius: 5px;
+  background-color: rgb(136, 0, 163);
+}
+
+.fighting{
+  border-radius: 5px;
+  background-color: rgb(255, 115, 0);
+}
+.psychic{
+  border-radius: 5px;
+  background-color: rgb(234, 0, 255);
+}
+
+.rock{
+  border-radius: 5px;
+  background-color: rgb(122, 73, 33);
+}
+.steel{
+  border-radius: 5px;
+  background-color: rgb(97, 97, 97);
+}
+.ice{
+  border-radius: 5px;
+  background-color: rgb(0, 183, 255);
+}
+.ghost{
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.507);
+}
+
+</style>
