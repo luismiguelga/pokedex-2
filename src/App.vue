@@ -15,16 +15,16 @@
           </svg>
         </button>
       </div>
-      <select id="opciones" name="tipo" v-model="tipoFiltrado">
+      <!-- <select id="opciones" name="tipo" v-model="tipoFiltrado">
         <option value="" disabled>Elige un tipo</option>
         <option value="">Todos</option>
         <option v-for="tipo in tipo_pk" :value="tipo" :key="tipo">{{ tipo }}</option>
-      </select>
+      </select> -->
       <button id="btnmas" @click="cargarMasPokemones(50)">Ver mas+</button>
     </div>
     <div id="info2">
       <div v-if="mostrar" id="info2">
-        <div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index" >
+        <div id="tarjetas" v-for="(pokemon, index) in listaFiltradaDePokemon" :key="index">
           <div id="mostrarcosas">
             <img :src="pokemon.img" alt="">
             <h1 id="namei">#{{ pokemon.numero }}</h1>
@@ -43,24 +43,35 @@
       </div>
       <div v-if="mostrardos">
         <div id="nuevacosa">
-          <h3 id="infonombre">{{ nombre }}</h3>
-          <img id="foton" :src="img" alt="">
+          <div class="name_img">
+            <h3 id="infonombre">{{ nombre }}</h3>
+            <img id="foton" :src="img" alt="">
+          </div>
           <div id="nuevacosa2">
-            <p id="info">HP <input id="barrap-hp" type="text" v-model="hp"> {{ hp }}%</p>
-            <p id="info">Ataque <input id="barrap-attack" type="text" v-model="attack"> {{ attack }}%</p>
-            <p id="info">Defensa <input id="barrap" type="text" v-model="defense"> {{ defense }}%</p>
-            <p id="info">Especial ataque <input id="barrap" type="text" v-model="specialattack"> {{ specialattack }}%</p>
-            <p id="info">Especial defensa <input id="barrap" type="text" v-model="specialdefense"> {{ specialdefense }}%
-            </p>
-            <p id="info">Velocidad <input id="barrap" type="text" v-model="speed"> {{ speed }}%</p>
-            <p id="info3" v-for="(item, index) in tipo_pk" :key="index" :class="item.toLowerCase()">{{ item }}</p>
-            <button id="volver" @click="Volver()">Volver👈</button>
+            <div>
+              <p id="info">HP <input id="barrap-hp" type="text" v-model="hp"> {{ hp }}%</p>
+              <p id="info">Ataque <input id="barrap-attack" type="text" v-model="attack"> {{ attack }}%</p>
+              <p id="info">Defensa <input id="barrap" type="text" v-model="defense"> {{ defense }}%</p>
+              <p id="info">Especial ataque <input id="barrap" type="text" v-model="specialattack"> {{ specialattack }}%
+              </p>
+              <p id="info">Especial defensa <input id="barrap" type="text" v-model="specialdefense"> {{ specialdefense
+                }}%
+              </p>
+              <p id="info">Velocidad <input id="barrap" type="text" v-model="speed"> {{ speed }}%</p>
+            </div>
+            <div class="leftinfo">
+              <div>
+                <p id="info3" v-for="(item, index) in tipo_pk" :key="index" :class="item.toLowerCase()">{{ item }}</p>
+              </div>
+              <button id="volver" @click="Volver()">Volver👈</button>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
-</template> 
+</template>
 
 <script setup>
 import axios from "axios"
@@ -220,7 +231,12 @@ async function obtenerTiposPokemon() {
 
 
 <style scoped>
-
+.leftinfo {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 81%;
+}
 
 #body {
   display: flex;
@@ -274,6 +290,7 @@ img {
   height: 30px;
   width: 300px;
 }
+
 #botones {
   width: 200px;
   height: 70px;
@@ -297,9 +314,6 @@ img {
 }
 
 #volver {
-  position: relative;
-  top: 63px;
-  left: 400px;
   width: 200px;
   height: 80px;
   color: rgb(0, 0, 0);
@@ -309,10 +323,7 @@ img {
   font-size: 30px;
 }
 
-#volver:hover {
-  color: #000000;
-  background-color: white;
-}
+
 
 #pokeball {
   width: 80px;
@@ -326,18 +337,12 @@ img {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 5mm;
   color: rgb(0, 0, 0);
-  position: relative;
-  top: 37px;
-  left: 160px;
 }
 
 #infonombre {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 10mm;
   color: rgb(0, 0, 0);
-  position: relative;
-  top: 15px;
-  left: 190px;
 }
 
 #info1 {
@@ -356,17 +361,16 @@ img {
   width: 100%;
   height: 100%;
 }
-#info3{
+
+#info3 {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 5mm;
   color: rgb(0, 0, 0);
-  position: relative;
-  top: 150px;
-  left: 160px;
   border: 5px solid rgb(0, 0, 0);
   border-radius: 5px;
   width: 200px;
 }
+
 #tarjetas {
   margin-top: 50px;
   background-color: rgba(90, 189, 255, 0.726);
@@ -421,25 +425,28 @@ img {
 
 #nuevacosa {
   margin-top: 30px;
-  display: flex;
   background-color: #a970ff;
   border-radius: 30px;
-  background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/8168a26e-e2d0-454e-9239-267f073715cf/dd777on-b4242a08-5757-401c-8e51-0dca0a438469.png/v1/fill/w_1280,h_854/fakemon_template___1_stage_pokemon_by_gecko_comics_dd777on-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9ODU0IiwicGF0aCI6IlwvZlwvODE2OGEyNmUtZTJkMC00NTRlLTkyMzktMjY3ZjA3MzcxNWNmXC9kZDc3N29uLWI0MjQyYTA4LTU3NTctNDAxYy04ZTUxLTBkY2EwYTQzODQ2OS5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.5EMy2p0mB6ZqcgqAdpC9KYXpNr7XFG8xUgwyGxTFS40);
+  background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/7c1cfff2-db8d-44cd-8a13-cb2a4162fae6/dd2zouo-047f7b3f-b895-43ac-82a4-abb6ca12c52a.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzdjMWNmZmYyLWRiOGQtNDRjZC04YTEzLWNiMmE0MTYyZmFlNlwvZGQyem91by0wNDdmN2IzZi1iODk1LTQzYWMtODJhNC1hYmI2Y2ExMmM1MmEucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.EFI6YQ0acRLpYHzupMAxV_N4KMcpNWT-_3RJ4TV-4eU);
   background-size: cover;
   background-repeat: no-repeat;
   width: 1200px;
   height: 550px;
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 30px;
+
 }
 
 #nuevacosa2 {
-  position: relative;
-  left: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-around;
 }
 
 #foton {
-  position: relative;
-  top: 150px;
-  left: -90px;
   width: 300px;
   height: 300px;
 }
@@ -527,6 +534,12 @@ button:hover .circle {
   width: 100%;
 }
 
+.name_img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 button:hover .circle .icon.arrow {
   background: #000000;
   transform: translate(1rem, 0);
@@ -606,58 +619,70 @@ button:hover .button-text {
   background-color: rgb(0, 132, 255);
   border-radius: 5px;
 }
-.poison{
+
+.poison {
   background-color: #9d00ff;
-  border-radius: 5px;}
-.bug{
+  border-radius: 5px;
+}
+
+.bug {
   background-color: green;
-  border-radius: 5px;}
-.flying{
+  border-radius: 5px;
+}
+
+.flying {
   border-radius: 5px;
   background-color: #53535fb6;
 }
-.normal{
+
+.normal {
   border-radius: 5px;
-    border-radius: 5px;background-color: rgba(255, 255, 255, 0.637) ;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.637);
 }
-.electric{
+
+.electric {
   border-radius: 5px;
   background-color: rgba(255, 255, 0, 0.74);
 }
-.ground{
+
+.ground {
   border-radius: 5px;
   background-color: rgb(131, 131, 0);
 }
 
-.fairy{
+.fairy {
   border-radius: 5px;
   background-color: rgb(136, 0, 163);
 }
 
-.fighting{
+.fighting {
   border-radius: 5px;
   background-color: rgb(255, 115, 0);
 }
-.psychic{
+
+.psychic {
   border-radius: 5px;
   background-color: rgb(234, 0, 255);
 }
 
-.rock{
+.rock {
   border-radius: 5px;
   background-color: rgb(122, 73, 33);
 }
-.steel{
+
+.steel {
   border-radius: 5px;
   background-color: rgb(97, 97, 97);
 }
-.ice{
+
+.ice {
   border-radius: 5px;
   background-color: rgb(0, 183, 255);
 }
-.ghost{
+
+.ghost {
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.507);
 }
-
 </style>
